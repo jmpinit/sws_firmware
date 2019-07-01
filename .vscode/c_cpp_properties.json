@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+               "/Applications/Arduino.app/Contents/Java/hardware/esp8266com/esp8266/libraries/**",
+               "/Applications/Arduino.app/Contents/Java/hardware/esp8266com/esp8266/cores/esp8266/**",
+               "/Applications/Arduino.app/Contents/Java/hardware/esp8266com/esp8266/variants/generic/**",
+               "/Applications/Arduino.app/Contents/Java/hardware/esp8266com/esp8266/tools/sdk/libc/xtensa-lx106-elf/include/**",
+               "/Applications/Arduino.app/Contents/Java/hardware/esp8266com/esp8266/tools/sdk/include/**"
+            ],
+            "defines": [],
+            "macFrameworkPath": [],
+            "compilerPath": "/usr/local/bin/gcc-8",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
