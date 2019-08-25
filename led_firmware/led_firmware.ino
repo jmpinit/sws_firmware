@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <WiFiClient.h>
@@ -8,6 +9,7 @@
 #include "led.h"
 #include "network_config.h"
 #include "http_control.h"
+#include "offsets.h"
 
 const char* LOCAL_EXT = "local"; // Usually 'local'
 
@@ -18,11 +20,7 @@ ESP8266HTTPUpdateServer httpUpdater;
 WiFiUDP udp;
 const unsigned int localUdpPort = 4210;
 char incomingPacket[180];
-
-// trigger
-// max brightness
-// min brightness
-// total fade time
+int my_led_value_offset;
 
 //============ SETUP
 
@@ -64,16 +62,44 @@ void setup_udp() {
   udp.begin(localUdpPort);
 }
 
+void set_offset() {
+  uint32_t id = ESP.getChipId();
+
+  for (int i = 0; i < sizeof(ESP_ADDRESS_OFFSETS) / sizeof(uint32_t); i++) {
+    if (ESP_ADDRESS_OFFSETS[i] == id) {
+      // Straighten the zig-zag strand pattern into a regular raster pattern
+      int y = i / 10;
+      bool leftToRight = y % 2 == 0;
+
+      if (leftToRight) {
+        my_led_value_offset = i;
+      } else {
+        my_led_value_offset = y * 10 + 10 - (i - y * 10);
+      }
+
+      return;
+    }
+  }
+}
+
 void setup() {
   Serial.begin(115200);
-  Serial.println("Booting");
+  Serial.println("Booting UDP receiver");
 
   setup_leds();
   set_hostname();
+  Serial.println("Setting up WiFi");
   setup_wifi();
+  Serial.println("WiFi set up");
   setup_mdns();
+  Serial.println("MDNS set up");
   setup_http_server();
   setup_http_update_server(); // Must happen after HTTP server is setup
+  Serial.println("HTTP set up");
+  setup_udp();
+  Serial.println("UDP set up");
+
+  set_offset();
 
   Serial.printf("HTTPServer ready! Open http://%s.%s in your browser\n", deviceHostname.c_str(), LOCAL_EXT);
   Serial.print("IP address: ");
@@ -88,10 +114,13 @@ void loop() {
     Serial.printf("Received %d bytes from %s, port %d\n", packetSize, udp.remoteIP().toString().c_str(), udp.remotePort());
 
     int len = udp.read(incomingPacket, sizeof(incomingPacket));
-    if (len > 0) {
-      incomingPacket[len] = 0;
-    }
 
-    Serial.printf("UDP packet contents: %s\n", incomingPacket);
+    //if (len == sizeof(incomingPacket)) {
+      // This is an LED update
+      float brightness = incomingPacket[my_led_value_offset] / 255.0;
+      set_brightness(brightness);
+    //}
   }
+
+  http_control_update();
 }

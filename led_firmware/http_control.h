@@ -11,5 +11,6 @@ void route_hostname();
 void route_mdns_query();
 void route_root();
 void setup_http_server();
+void http_control_update();
 
 #endif
