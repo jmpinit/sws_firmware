@@ -10,7 +10,7 @@ void setup_leds() {
 // Brightness is 0 to 1 where 1 is brightest
 void set_brightness(float brightness) {
   int brightnessIndex = (int)(0xff * constrain(brightness, 0, 1));
-  int pwmDutyCycle = brightnessLookup[brightnessIndex] * PWMRANGE;
+  int pwmDutyCycle = brightnessLookup[brightnessIndex] * (PWMRANGE / 256);
 
   analogWrite(BULB_PIN, pwmDutyCycle);
   analogWrite(LED_PIN, pwmDutyCycle);
