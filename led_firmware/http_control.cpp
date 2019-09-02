@@ -175,7 +175,6 @@ void route_off() {
 
 // Handles /
 void route_root() {
-  String localIP = String(WiFi.localIP());
   server.send(200, "text/plain", "hello - 7/9/2019");
 }
 
