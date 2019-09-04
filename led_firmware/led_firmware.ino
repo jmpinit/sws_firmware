@@ -74,7 +74,7 @@ void set_offset() {
       if (leftToRight) {
         my_led_value_offset = i;
       } else {
-        my_led_value_offset = y * 10 + 10 - (i - y * 10);
+        my_led_value_offset = y * 10 + 10 - (i - y * 10) - 1;
       }
 
       return;
