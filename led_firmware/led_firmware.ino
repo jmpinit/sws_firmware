@@ -19,7 +19,8 @@ ESP8266HTTPUpdateServer httpUpdater;
 
 WiFiUDP udp;
 const unsigned int localUdpPort = 4210;
-char incomingPacket[180];
+// Two bytes per LED
+char incomingPacket[180 * 2];
 int my_led_value_offset;
 
 //============ SETUP
@@ -117,7 +118,10 @@ void loop() {
 
     //if (len == sizeof(incomingPacket)) {
       // This is an LED update
-      float brightness = incomingPacket[my_led_value_offset] / 255.0;
+      uint16_t brightnessH = incomingPacket[my_led_value_offset * 2];
+      uint16_t brightnessL = incomingPacket[my_led_value_offset * 2 + 1]; 
+      float brightness = ((brightnessH << 8) | brightnessL) / 0x3ff;
+
       set_brightness(brightness);
     //}
   }
