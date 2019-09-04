@@ -1,3 +1,4 @@
+#include <math.h>
 #include "Arduino.h"
 #include "led.h"
 
@@ -17,7 +18,7 @@ int brightnessLookup[] = {
   42, 43, 43, 44, 45, 46, 47, 48, 49, 49, 50, 51, 52, 54, 55, 56,
   57, 58, 60, 61, 63, 64, 66, 68, 69, 72, 74, 76, 79, 82, 86, 90,
   96, 103, 111, 121, 129, 137, 143, 148, 152, 157, 160, 164, 167, 171, 174, 177,
-  180, 183, 186, 189, 192, 195, 198, 253, 251, 249, 247, 244, 240, 240, 240, 240,
+  180, 183, 186, 189, 192, 195, 198, 253, 251, 249, 247, 244, 240, 240, 240, 255,
 };
 
 void setup_leds() {
@@ -28,8 +29,17 @@ void setup_leds() {
 
 // Brightness is 0 to 1 where 1 is brightest
 void set_brightness(float brightness) {
-  int brightnessIndex = (int)(0xff * constrain(brightness, 0, 1));
-  int pwmDutyCycle = brightnessLookup[brightnessIndex] * (PWMRANGE / 256);
+  uint16_t brightnessValue = (int)(0x3ff * constrain(brightness, 0, 1));
+  uint16_t brightnessIndex = brightnessValue >> 2;
+  float lerpRatio = (float)(brightnessValue & 0x3) / 4.0f;
+  int referenceValue1 = brightnessLookup[brightnessIndex];
+  int referenceValue2 = brightnessIndex < 255 ?
+    brightnessLookup[brightnessIndex + 1]
+    : referenceValue1;
+
+  float pwmValue = referenceValue1 + (referenceValue2 - referenceValue1) * lerpRatio;
+
+  int pwmDutyCycle = round(pwmValue) * ((float)PWMRANGE / 256);
 
   analogWrite(BULB_PIN, pwmDutyCycle);
   analogWrite(LED_PIN, pwmDutyCycle);
