@@ -120,7 +120,7 @@ void loop() {
       // This is an LED update
       uint16_t brightnessH = incomingPacket[my_led_value_offset * 2];
       uint16_t brightnessL = incomingPacket[my_led_value_offset * 2 + 1]; 
-      float brightness = ((brightnessH << 8) | brightnessL) / 0x3ff;
+      float brightness = ((brightnessH << 8) | brightnessL) / (float)0x3ff;
 
       set_brightness(brightness);
     //}
