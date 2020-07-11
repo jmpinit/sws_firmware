@@ -1,5 +1,7 @@
 # Space Within Spaces Firmware
 
+![](docs/images/sws_slow_pattern.gif)
+
 A Space Within Spaces is an art installation by Joseph Morris in the Juliana
 Curran Terian Design Center Atrium at Pratt. The installation consists of an
 array of 180 LED light bulbs hanging in the space above the atrium. This
